@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Counter))]
 public class Counter : MonoBehaviour
 {
-    private LeftMouseButtonClick _leftMouseButton;
+    private ButtonClick _leftMouseButton;
     private int _number;
     private float _delayTime;
     private WaitForSeconds _sleep;
@@ -17,7 +17,7 @@ public class Counter : MonoBehaviour
 
     private void Awake()
     {
-        _leftMouseButton = GetComponent<LeftMouseButtonClick>();
+        _leftMouseButton = GetComponent<ButtonClick>();
         _number = 0;
         _delayTime = .5f;
         _sleep = new WaitForSeconds(_delayTime);

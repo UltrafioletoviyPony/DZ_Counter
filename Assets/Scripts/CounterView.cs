@@ -7,8 +7,6 @@ public class CounterView : MonoBehaviour
 {
     private TextMeshProUGUI _text;
     private Counter _counter;
-
-    private bool _isRunning;
     private Vector3 _defaultLocalScale;
     private Vector3 _eventLocalScale;
     private Color _defaultColor;
@@ -19,7 +17,6 @@ public class CounterView : MonoBehaviour
     {
         _text = GetComponent<TextMeshProUGUI>();
         _counter = GetComponent<Counter>();
-        _isRunning = false;
         _defaultLocalScale = _text.transform.localScale;
         _eventLocalScale = _defaultLocalScale * 1.2f;
         _defaultColor = _text.color;
@@ -30,45 +27,43 @@ public class CounterView : MonoBehaviour
     private void OnEnable()
     {
         _counter.NumberUpdate += NumberUpdate;
-        _counter.RunStatus += RunStatusUpdate;
+        _counter.RunStatus += ParametresUpdate;
     }
 
     private void OnDisable()
     {
         _counter.NumberUpdate -= NumberUpdate;
-        _counter.RunStatus += RunStatusUpdate;
+        _counter.RunStatus += ParametresUpdate;
     }
 
-    private void RunStatusUpdate(bool isRunned)
+    private void ParametresUpdate(bool isRunned)
     {
-        _isRunning = isRunned;
-
-        SetTextColor();
-        SetTextLocalScale();
+        SetTextColor(isRunned);
+        SetTextLocalScale(isRunned);
     }
 
     private void NumberUpdate(int text) =>
         _text.text = text.ToString();
 
-    private void SetTextLocalScale()
+    private void SetTextLocalScale(bool isRunned)
     {
-        if (_isRunning)
+        if (isRunned)
             _text.transform.localScale = _eventLocalScale;
         else
             _text.transform.localScale = _defaultLocalScale;
     }
 
-    private void SetTextColor()
+    private void SetTextColor(bool isRunned)
     {
         if (_coroutine != null)
             StopCoroutine(_coroutine);
 
-        StartCoroutineColor();
+        StartCoroutineColor(isRunned);
     }
 
-    private void StartCoroutineColor()
+    private void StartCoroutineColor(bool isRunned)
     {
-        if (_isRunning)
+        if (isRunned)
             _coroutine = StartCoroutine(ColorTransition(_defaultColor, _eventColor));
         else
             _coroutine = StartCoroutine(ColorTransition(_eventColor, _defaultColor));

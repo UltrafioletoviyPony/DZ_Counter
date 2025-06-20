@@ -2,9 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(LeftMouseButtonClick))]
 [RequireComponent(typeof(Button))]
-public class LeftMouseButtonClick : MonoBehaviour
+public class ButtonClick : MonoBehaviour
 {
     private Button _button;
 
