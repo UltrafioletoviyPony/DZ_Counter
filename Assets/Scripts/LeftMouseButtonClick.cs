@@ -2,12 +2,11 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LeftMouseButton : MonoBehaviour
+[RequireComponent(typeof(LeftMouseButtonClick))]
+[RequireComponent(typeof(Button))]
+public class LeftMouseButtonClick : MonoBehaviour
 {
     private Button _button;
-    private bool _isRunned = false;
-
-    public bool IsRunned => _isRunned;
 
     public event Action Clicked;
 
@@ -20,9 +19,6 @@ public class LeftMouseButton : MonoBehaviour
     private void OnDisable() =>
         _button.onClick.RemoveListener(Click);
 
-    private void Click()
-    {
-        _isRunned = !_isRunned;
+    private void Click() =>
         Clicked?.Invoke();
-    }
 }

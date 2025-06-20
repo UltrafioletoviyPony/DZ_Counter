@@ -1,22 +1,27 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Counter))]
 public class Counter : MonoBehaviour
 {
-    private LeftMouseButton _leftMouseButton;
-    private Viewer _viewer;
+    private LeftMouseButtonClick _leftMouseButton;
     private int _number;
     private float _delayTime;
     private WaitForSeconds _sleep;
     private Coroutine _coroutine;
+    private bool _isRunned;
+
+    public event Action<int> NumberUpdate;
+    public event Action<bool> RunStatus;
 
     private void Awake()
     {
-        _leftMouseButton = GetComponent<LeftMouseButton>();
-        _viewer = GetComponent<Viewer>();
+        _leftMouseButton = GetComponent<LeftMouseButtonClick>();
         _number = 0;
         _delayTime = .5f;
         _sleep = new WaitForSeconds(_delayTime);
+        _isRunned = false;
     }
 
     private void OnEnable() =>
@@ -27,7 +32,10 @@ public class Counter : MonoBehaviour
 
     private void Run()
     {
-        if (_leftMouseButton.IsRunned)
+        _isRunned = !_isRunned;
+        RunStatus?.Invoke(_isRunned);
+
+        if (_isRunned)
             _coroutine = StartCoroutine(Timer());
         else if (_coroutine != null)
             StopCoroutine(_coroutine);
@@ -35,10 +43,12 @@ public class Counter : MonoBehaviour
 
     private IEnumerator Timer()
     {
-        while (true)
+        bool isEnabled = true;
+
+        while (isEnabled)
         {
             _number++;
-            _viewer.SetText(_number);
+            NumberUpdate?.Invoke(_number);
             yield return _sleep;
         }
     }

@@ -2,11 +2,13 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-public class Viewer : MonoBehaviour
+[RequireComponent(typeof(CounterView))]
+public class CounterView : MonoBehaviour
 {
     private TextMeshProUGUI _text;
-    private LeftMouseButton _leftMouseButton;
+    private Counter _counter;
 
+    private bool _isRunning;
     private Vector3 _defaultLocalScale;
     private Vector3 _eventLocalScale;
     private Color _defaultColor;
@@ -16,7 +18,8 @@ public class Viewer : MonoBehaviour
     private void Awake()
     {
         _text = GetComponent<TextMeshProUGUI>();
-        _leftMouseButton = GetComponent<LeftMouseButton>();
+        _counter = GetComponent<Counter>();
+        _isRunning = false;
         _defaultLocalScale = _text.transform.localScale;
         _eventLocalScale = _defaultLocalScale * 1.2f;
         _defaultColor = _text.color;
@@ -26,22 +29,30 @@ public class Viewer : MonoBehaviour
 
     private void OnEnable()
     {
-        _leftMouseButton.Clicked += SetTextColor;
-        _leftMouseButton.Clicked += SetTextLocalScale;
+        _counter.NumberUpdate += NumberUpdate;
+        _counter.RunStatus += RunStatusUpdate;
     }
 
     private void OnDisable()
     {
-        _leftMouseButton.Clicked -= SetTextColor;
-        _leftMouseButton.Clicked -= SetTextLocalScale;
+        _counter.NumberUpdate -= NumberUpdate;
+        _counter.RunStatus += RunStatusUpdate;
     }
 
-    public void SetText(int value) =>
-        _text.text = value.ToString();
+    private void RunStatusUpdate(bool isRunned)
+    {
+        _isRunning = isRunned;
+
+        SetTextColor();
+        SetTextLocalScale();
+    }
+
+    private void NumberUpdate(int text) =>
+        _text.text = text.ToString();
 
     private void SetTextLocalScale()
     {
-        if (_leftMouseButton.IsRunned)
+        if (_isRunning)
             _text.transform.localScale = _eventLocalScale;
         else
             _text.transform.localScale = _defaultLocalScale;
@@ -57,7 +68,7 @@ public class Viewer : MonoBehaviour
 
     private void StartCoroutineColor()
     {
-        if (_leftMouseButton.IsRunned)
+        if (_isRunning)
             _coroutine = StartCoroutine(ColorTransition(_defaultColor, _eventColor));
         else
             _coroutine = StartCoroutine(ColorTransition(_eventColor, _defaultColor));
